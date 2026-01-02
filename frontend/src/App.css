@@ -1,0 +1,39 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  flex-direction: column;
+}
+
+.auth-toggle {
+  text-align: center;
+  color: white;
+  margin-top: 20px;
+}
+
+.auth-toggle button {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 1rem;
+}
+
+.auth-toggle button:hover {
+  opacity: 0.8;
+}

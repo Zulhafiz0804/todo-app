@@ -1,0 +1,11 @@
+com\todoapp\model\User$UserBuilder.class
+com\todoapp\repository\UserRepository.class
+com\todoapp\controller\AuthController.class
+com\todoapp\model\Todo.class
+com\todoapp\TodoApplication.class
+com\todoapp\repository\TodoRepository.class
+com\todoapp\service\AuthService.class
+com\todoapp\model\User.class
+com\todoapp\controller\TodoController.class
+com\todoapp\model\Todo$TodoBuilder.class
+com\todoapp\service\TodoService.class
