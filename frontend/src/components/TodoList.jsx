@@ -9,6 +9,7 @@ export default function TodoList() {
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const userId = localStorage.getItem('userId');
   const username = localStorage.getItem('username');
 
@@ -64,70 +65,149 @@ export default function TodoList() {
     window.location.reload();
   };
 
+  // Filter todos based on search query
+  const filteredTodos = todos.filter(todo =>
+    todo.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (todo.description && todo.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  // Calculate statistics
+  const completedCount = todos.filter(t => t.completed).length;
+  const pendingCount = todos.filter(t => !t.completed).length;
+
   return (
-    <div className="todo-container">
-      <div className="header">
-        <h1>Todo App</h1>
-        <p>Welcome, {username}!</p>
-        <button onClick={handleLogout} className="logout-btn">
-          Logout
-        </button>
-      </div>
-
-      <form onSubmit={handleAddTodo} className="add-todo-form">
-        <input
-          type="text"
-          placeholder="Add a new todo..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        <textarea
-          placeholder="Description (optional)"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows="2"
-        />
-        <button type="submit">Add Todo</button>
-      </form>
-
-      <div className="filter-buttons">
-        <button
-          onClick={() => setFilter('all')}
-          className={filter === 'all' ? 'active' : ''}
-        >
-          All ({todos.length})
-        </button>
-        <button
-          onClick={() => setFilter('pending')}
-          className={filter === 'pending' ? 'active' : ''}
-        >
-          Pending
-        </button>
-        <button
-          onClick={() => setFilter('completed')}
-          className={filter === 'completed' ? 'active' : ''}
-        >
-          Completed
-        </button>
-      </div>
-
-      {loading ? (
-        <p>Loading todos...</p>
-      ) : todos.length === 0 ? (
-        <p className="empty-message">No todos yet. Create one to get started!</p>
-      ) : (
-        <div className="todos-list">
-          {todos.map(todo => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              onDelete={handleDeleteTodo}
-              onUpdate={handleUpdateTodo}
-            />
-          ))}
+    <div className="todo-app">
+      {/* Header */}
+      <div className="app-header">
+        <div className="header-content">
+          <div className="title-section">
+            <h1 className="app-title">📝 Todo App</h1>
+            <p className="app-subtitle">Stay organized and productive</p>
+          </div>
+          <div className="user-section">
+            <div className="user-info">
+              <span className="user-icon">👤</span>
+              <span className="user-name">{username}</span>
+            </div>
+            <button onClick={handleLogout} className="logout-btn">
+              Logout
+            </button>
+          </div>
         </div>
-      )}
+      </div>
+
+      {/* Main Container */}
+      <div className="todo-container">
+        {/* Statistics */}
+        <div className="statistics">
+          <div className="stat-card total">
+            <div className="stat-number">{todos.length}</div>
+            <div className="stat-label">Total Tasks</div>
+          </div>
+          <div className="stat-card pending">
+            <div className="stat-number">{pendingCount}</div>
+            <div className="stat-label">Pending</div>
+          </div>
+          <div className="stat-card completed">
+            <div className="stat-number">{completedCount}</div>
+            <div className="stat-label">Completed</div>
+          </div>
+        </div>
+
+        {/* Add Todo Form */}
+        <form onSubmit={handleAddTodo} className="add-todo-form">
+          <div className="form-group">
+            <label htmlFor="title">Task Title</label>
+            <input
+              id="title"
+              type="text"
+              placeholder="What needs to be done?"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="description">Description</label>
+            <textarea
+              id="description"
+              placeholder="Add more details... (optional)"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows="3"
+              className="form-textarea"
+            />
+          </div>
+          <button type="submit" className="submit-btn">
+            ✨ Add Task
+          </button>
+        </form>
+
+        {/* Search Bar */}
+        <div className="search-section">
+          <input
+            type="text"
+            placeholder="🔍 Search tasks..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
+        </div>
+
+        {/* Filter Buttons */}
+        <div className="filter-section">
+          <button
+            onClick={() => setFilter('all')}
+            className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+          >
+            All <span className="badge">{todos.length}</span>
+          </button>
+          <button
+            onClick={() => setFilter('pending')}
+            className={`filter-btn ${filter === 'pending' ? 'active' : ''}`}
+          >
+            Pending <span className="badge">{pendingCount}</span>
+          </button>
+          <button
+            onClick={() => setFilter('completed')}
+            className={`filter-btn ${filter === 'completed' ? 'active' : ''}`}
+          >
+            Completed <span className="badge">{completedCount}</span>
+          </button>
+        </div>
+
+        {/* Todos List */}
+        {loading ? (
+          <div className="loading">
+            <div className="spinner"></div>
+            <p>Loading tasks...</p>
+          </div>
+        ) : filteredTodos.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">📭</div>
+            <p className="empty-title">
+              {searchQuery ? 'No tasks found' : 'No tasks yet'}
+            </p>
+            <p className="empty-subtitle">
+              {searchQuery
+                ? 'Try a different search'
+                : 'Create your first task to get started!'}
+            </p>
+          </div>
+        ) : (
+          <div className="todos-grid">
+            {filteredTodos.map((todo) => (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                onDelete={handleDeleteTodo}
+                onUpdate={handleUpdateTodo}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
